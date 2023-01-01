@@ -1,0 +1,39 @@
+Docker Commands
+---------------
+
+docker run redis
+docker run busybox echo Hi there
+docker create busybox ping google.com
+docker start -a <hash-value>
+docker system prune 
+docker ps --all
+docker ps 
+docker logs <container-id>
+docker stop <container-id> [SIGTERM]
+docker kill <container-id> [SIGKILL]
+docker exec -it <container-id> redis-cli
+docker run -it busybox sh [open up the shell]
+
+
+Docker File -> Docker Client -> Docker Server -> Usable Image
+
+Creating a Docker File
+----------------------
+> Specify a base image
+> Run some commands to install additional programs
+> Specify a command to run on container startup
+
+Dockerfile
+----------
+# Use an existing image as a base
+FROM alpine
+
+# Download and install a dependency
+RUN apk add --update redis
+RUN apk add --update gcc
+
+
+# Tell the image what to do when it starts as a container
+CMD ["redis-server"]
+
+Tagging an image - docker build -t sauravr/redis:latest 
