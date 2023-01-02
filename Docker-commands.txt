@@ -36,4 +36,62 @@ RUN apk add --update gcc
 # Tell the image what to do when it starts as a container
 CMD ["redis-server"]
 
-Tagging an image - docker build -t sauravr/redis:latest 
+DOCKER BUILD
+------------
+docker build .
+
+Docker Build & Tagging an image
+-------------------------------
+docker build -t sauravr/redis:latest .
+
+
+"alpine" version is the most basic version of the image.
+FROM node:14-alpine
+
+
+When you are building an image, none of the files inside of your project directory right here are available inside the container by default. They are all a hundred percent sectioned off, completely segmented out, they are not at all available, and you cannot assume that any of these files are available unless you specifically allow it inside of your docker file.So as my guess, that's exactly what we're going to do. We're going to add in one line of configuration to our docker file to make sure that both our index.js file and package.json file are available inside the container.
+
+
+COPY ./ COPY./
+
+
+# Specify a base image
+FROM node:14-alpine
+
+# Install some dependencies
+COPY ./ ./
+RUN npm install
+
+# Default Commands
+CMD ["npm", "start"]
+
+
+Docker RUN with PORT-MAPPING
+----------------------------
+A port mapping essentially says anytime that someone makes a request to a given port on your local network, take that request and automatically forward it to some port inside the container. So in other words, if anyone makes a request to local host 8080, take that request automatically forward it into the container on port 8080 where the node application can then receive it and process the request and eventually respond to it. Now, one thing that I wanna make sure is really clear right now from the get-go this is only talking about incoming requests.Your Docker container can by default make requests on its own behalf to the outside world.
+
+
+To set up docker run with port mapping. We're gonna add on a dash P flag.
+
+The syntax overall is docker, run, then dash P.
+-----------------------------------------------
+docker run -p 8080:8080 <image-name>
+
+
+Then we're gonna specify that any incoming traffic on our local network to this port right here should be automatically forwarded onto this port inside the container right here.
+And notice how there's a separation between these two ports or these two numbers of a colon.
+We're gonna specify either the image ID or the image name. The one big thing to remember is that we have to specify it at runtime, not inside of the docker file.
+
+
+# Specify a base image
+FROM node:14-alpine
+
+WORKDIR /usr/app
+
+# Install some dependencies
+COPY ./package.json ./  # To use the cache while building again
+RUN npm install
+COPY ./ ./
+
+# Default Commands
+CMD ["npm", "start"]
