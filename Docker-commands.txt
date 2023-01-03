@@ -133,3 +133,47 @@ docker run myImage ---> docker-compose up
 
 docker build .
 docker run myImage ---> docker-compose up --build 
+
+
+-d, --detach  Run container in background and print container ID
+The -d flag starts up a container in detached mode.  Effectively, this means that output from the container will not be piped to your shell.  You can continue to run other commands while the container is still running.
+
+
+Launch in Background
+--------------------
+
+docker-compose up -d
+
+Stop Containers
+---------------
+
+docker-compose down
+
+Status code - 0 (Successful Exit)
+Status code - 1, 2, 3 etc.
+
+
+Restart Policies
+----------------
+"no" = Never attempt to restart this . container if it stops or crashes
+always = If this container stops *for any reason* always attempt to restart it
+on-failure = Only restart if the container stops with an error code
+unless-stopped = Always restart unless we(developers) forcibly stop it 	
+
+
+docker-compose.yml
+------------------
+version: "3"
+services: 
+  redis-server:
+    image: "redis"
+  node-app:
+  	restart: always
+    build: .
+    ports:
+      - "4001:9091"
+
+
+Container Status code
+---------------------
+docker-compose ps
