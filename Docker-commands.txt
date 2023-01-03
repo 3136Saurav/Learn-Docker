@@ -95,3 +95,41 @@ COPY ./ ./
 
 # Default Commands
 CMD ["npm", "start"]
+
+
+
+DOCKER COMPOSE
+--------------
+The purpose of Docker Compose is to essentially function as Docker CLI but allow you to kind of issue
+multiple commands much more quickly.
+
+Docker Compose automatically sets up networking between different services or different types of containers that we define inside of our docker compose file.
+
+Separate CLI that gets installed along with the Docker.
+Used to start up multiple containers at the same time
+Automates some of the long-winded arguments that we were passing to 'docker run'
+
+const client = redis.createClient({
+    host: "redis-server", 
+    port: 6379
+})      
+
+docker-compose.yml
+------------------
+
+version: "3"
+services: 
+  redis-server:
+    image: "redis"
+  node-app:
+    build: .
+    ports:
+      - "4001:9091"
+
+
+
+docker run myImage ---> docker-compose up
+
+
+docker build .
+docker run myImage ---> docker-compose up --build 
