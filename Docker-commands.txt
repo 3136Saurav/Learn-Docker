@@ -109,6 +109,9 @@ Separate CLI that gets installed along with the Docker.
 Used to start up multiple containers at the same time
 Automates some of the long-winded arguments that we were passing to 'docker run'
 
+
+Purpose of Docker-compose make the docker run command much easier.
+
 const client = redis.createClient({
     host: "redis-server", 
     port: 6379
@@ -132,7 +135,7 @@ docker run myImage ---> docker-compose up
 
 
 docker build .
-docker run myImage ---> docker-compose up --build 
+docker run myImage ---> docker-compose up --build, docker-compose --build --nocache 
 
 
 -d, --detach  Run container in background and print container ID
@@ -177,3 +180,105 @@ services:
 Container Status code
 ---------------------
 docker-compose ps
+
+
+npm run start --> Starts up a development server. For development use only. 
+npm run build --> Runs test associated with the project.
+npm run test  --> Builds a production version of the application.
+
+
+
+
+Run Docker build command with custom Dockerfile name
+----------------------------------------------------
+
+docker build -f Dockerfile.dev .
+
+
+When we use the -v flag we're essentially trying to say anytime that the container tries to access
+something in the app directory, it's gonna reach back out of the container to the current or the present working directory on our local machine.
+
+
+
+Bookmarking Docker Volumes
+--------------------------
+
+docker build -f Dockerfile.dev -t sauravr:frontend .
+
+docker run -it -p 3000:3000 -v /home/node/app/node_modules -v /home/sauravr/frontend:/home/node/app sauravr:frontend
+
+
+Run extra commands (Running Tests in a container - React App)
+------------------
+docker run -it <container-id> npm run test
+
+Running Tests in interactive mode
+---------------------------------
+docker exec -it <container-id> npm run test
+
+
+docker-compose.yml (with 2 containers - web and tests)
+------------------
+version: '3'
+services:
+  web: 
+    stdin_open: true
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    ports: 
+      - '3000:3000'
+    volumes:
+      - /app/node_modules
+      - .:/app
+  tests:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+      - .:/app
+    command: ["npm", "run", "test"]
+
+Command: docker-compose up --build
+
+
+By default, the Nginx web server listens to all incoming connections on port 80. If you have installed an SSL certificate, then it will listen to all secure connections on port 443.
+
+
+Docker Production Setup
+-----------------------
+Build Phase
+...........
+> Use node:16-alpine
+> Copy package.json file
+> Install Dependencies
+> Run 'npm build run'
+
+Run Phase
+.........
+> Use nginx
+> Copy over the result of 'npm run build'
+> Start nginx
+
+/app/build -- contains the static files we built using npm run build
+
+Dockerfile (For production with nginx image included)
+----------
+
+FROM node:16-alpine AS builder
+WORKDIR '/app'
+COPY package.json .
+RUN npm install
+COPY . .
+RUN npm run build
+
+
+FROM nginx
+COPY --from=builder /app/build /usr/share/nginx/html
+
+
+Commands 
+--------
+docker build .
+docker run -p 8080:80 <Container-Id>
